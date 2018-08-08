@@ -10,8 +10,9 @@
 #import "RCTPSPDFKitView.h"
 #import <React/RCTUtils.h>
 #import "RCTConvert+PSPDFAnnotation.h"
+#import "PulserAnnotationToolbar.h"
 
-@interface RCTPSPDFKitView ()<PSPDFDocumentDelegate, PSPDFViewControllerDelegate>
+@interface RCTPSPDFKitView ()<PSPDFDocumentDelegate, PSPDFViewControllerDelegate, PSPDFFlexibleToolbarContainerDelegate>
 
 @property (nonatomic, nullable) UIViewController *topController;
 
@@ -21,7 +22,10 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
-    _pdfController = [[PSPDFViewController alloc] init];
+    _pdfController = [[PSPDFViewController alloc] initWithDocument:nil configuration:[PSPDFConfiguration configurationWithBuilder:^(PSPDFConfigurationBuilder *builder) {
+      [builder overrideClass:PSPDFAnnotationToolbar.class withClass:PulserAnnotationToolbar.class];
+    }]];
+    
     _pdfController.delegate = self;
     _pdfController.annotationToolbarController.delegate = self;
     _closeButton = [[UIBarButtonItem alloc] initWithImage:[PSPDFKit imageNamed:@"x"] style:UIBarButtonItemStylePlain target:self action:@selector(closeButtonPressed:)];

@@ -22,6 +22,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
+    // Init controller and replace default annotation toolbar with custom one
     _pdfController = [[PSPDFViewController alloc] initWithDocument:nil configuration:[PSPDFConfiguration configurationWithBuilder:^(PSPDFConfigurationBuilder *builder) {
       [builder overrideClass:PSPDFAnnotationToolbar.class withClass:PulserAnnotationToolbar.class];
     }]];
@@ -33,6 +34,13 @@
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationChangedNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsAddedNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsRemovedNotification object:nil];
+
+    // Add pin issue button press handler
+    PulserAnnotationToolbar *annotationToolbar = (PulserAnnotationToolbar *) _pdfController.annotationToolbarController.annotationToolbar;
+    if (annotationToolbar) {
+      PSPDFToolbarButton *pinIssueButton = annotationToolbar.pinIssueButton;
+      [pinIssueButton addTarget:self action:@selector(pinIssueButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    }
   }
 
   return self;
@@ -158,6 +166,14 @@
 
 - (void)pdfViewController:(PSPDFViewController *)pdfController willBeginDisplayingPageView:(PSPDFPageView *)pageView forPageAtIndex:(NSInteger)pageIndex {
   [self onStateChangedForPDFViewController:pdfController pageView:pageView pageAtIndex:pageIndex];
+}
+
+- (BOOL)pdfViewController:(PSPDFViewController *)pdfController shouldShowController:(UIViewController *)controller options:(nullable NSDictionary<NSString *, id> *)options animated:(BOOL)animated {
+  PSPDFStampViewController *stampController = (PSPDFStampViewController *)PSPDFChildViewControllerForClass(controller, PSPDFStampViewController.class);
+  stampController.customStampEnabled = NO;
+  stampController.dateStampsEnabled = NO;
+  
+  return YES;
 }
 
 #pragma mark - PSPDFFlexibleToolbarContainerDelegate
@@ -338,6 +354,31 @@
                           @"formEditingActive" : @(isFormEditingActive)
                           });
   }
+}
+
+#pragma mark - Pulser events
+
+- (void)pinIssueButtonPressed:(id)sender {
+  PSPDFDocument *document = self.pdfController.document;
+  PSPDFPageIndex pageIndex = self.pdfController.pageIndex;
+  PSPDFPageView *pageView = [self.pdfController pageViewForPageAtIndex:pageIndex];
+
+  CGRect visibleViewRect = pageView.visibleRect;
+  CGRect visiblePDFRect = [pageView convertViewRectToPDFRect:visibleViewRect];
+
+  CGSize size = CGSizeMake(50.f, 50.f);
+  CGFloat centerX = visiblePDFRect.origin.x + (visiblePDFRect.size.width - size.width) * 0.5;
+  CGFloat centerY = visiblePDFRect.origin.y + (visiblePDFRect.size.height - size.height) * 0.5;
+  
+  NSURL *stampsURL = [NSBundle.mainBundle.resourceURL URLByAppendingPathComponent:@"Stamps"];
+  NSURL *pinnedIssueStampURL = [stampsURL URLByAppendingPathComponent:@"pinned_issue_opened.pdf"];
+  
+  PSPDFStampAnnotation *pinnedIssueStamp = [[PSPDFStampAnnotation alloc] init];
+  pinnedIssueStamp.appearanceStreamGenerator = [[PSPDFFileAppearanceStreamGenerator alloc] initWithFileURL:pinnedIssueStampURL];
+  pinnedIssueStamp.boundingBox = CGRectMake(centerX, centerY, size.width, size.height);
+  pinnedIssueStamp.pageIndex = pageIndex;
+  
+  [document addAnnotations:@[pinnedIssueStamp] options:nil];
 }
 
 @end

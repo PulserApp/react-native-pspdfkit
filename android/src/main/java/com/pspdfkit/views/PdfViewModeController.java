@@ -1,11 +1,18 @@
 package com.pspdfkit.views;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.pspdfkit.annotations.StampAnnotation;
+import com.pspdfkit.annotations.appearance.AssetAppearanceStreamGenerator;
+import com.pspdfkit.annotations.stamps.StampPickerItem;
+import com.pspdfkit.document.PdfDocument;
 import com.pspdfkit.react.R;
+import com.pspdfkit.ui.PdfFragment;
 import com.pspdfkit.ui.forms.FormEditingBar;
 import com.pspdfkit.ui.inspector.PropertyInspectorCoordinatorLayout;
 import com.pspdfkit.ui.inspector.annotation.DefaultAnnotationCreationInspectorController;
@@ -210,34 +217,63 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
     }
 
     private void configurePulserToolbar() {
-        annotationCreationToolbar.setMenuItemGroupingRule(new PulserToolbarGroupingRule(parent.getContext()));
-
-        final List<ContextualToolbarMenuItem> menuItems = annotationCreationToolbar.getMenuItems();
-
+        final Context context = parent.getContext();
         final ContextualToolbarMenuItem pinIssueMenuItem = ContextualToolbarMenuItem.createSingleItem(
-            parent.getContext(),
-            R.id.pspdf__annotation_creation_toolbar_item_pin_pulser_issue,
-            ContextCompat.getDrawable(parent.getContext(), R.drawable.pspdf__ic_pin_pulser_issue),
-            "Pin Issue",
-            Color.WHITE,
-            Color.WHITE,
-            ContextualToolbarMenuItem.Position.START,
-            false
+                context,
+                R.id.pspdf__annotation_creation_toolbar_item_pin_pulser_issue,
+                ContextCompat.getDrawable(context, R.drawable.pspdf__ic_pin_pulser_issue),
+                "Pin Issue",
+                Color.WHITE,
+                Color.WHITE,
+                ContextualToolbarMenuItem.Position.START,
+                false
         );
 
+        final List<ContextualToolbarMenuItem> menuItems = annotationCreationToolbar.getMenuItems();
         menuItems.add(pinIssueMenuItem);
 
+        annotationCreationToolbar.setMenuItemGroupingRule(new PulserToolbarGroupingRule(context));
         annotationCreationToolbar.setMenuItems(menuItems);
-
         annotationCreationToolbar.setOnMenuItemClickListener(new ContextualToolbar.OnMenuItemClickListener() {
             @Override
             public boolean onToolbarMenuItemClick(@NonNull ContextualToolbar toolbar, @NonNull ContextualToolbarMenuItem menuItem) {
                 if (menuItem.getId() == R.id.pspdf__annotation_creation_toolbar_item_pin_pulser_issue) {
-                    Toast.makeText(parent.getContext(), "Custom Action clicked", Toast.LENGTH_SHORT).show();
+                    handlePinIssueMenuItemPress();
                     return true;
                 }
                 return false;
             }
         });
+    }
+
+    private void handlePinIssueMenuItemPress() {
+        // Toast.makeText(parent.getContext(), "Pin issue button pressed", Toast.LENGTH_SHORT).show();
+
+        final PdfFragment fragment = parent.getFragment();
+
+        if (fragment != null) {
+            final PdfDocument document = fragment.getDocument();
+
+            if (document != null) {
+                int pageIndex = fragment.getPageIndex();
+
+                if (pageIndex >= 0) {
+                    RectF visiblePdfRect = new RectF();
+                    fragment.getVisiblePdfRect(visiblePdfRect, pageIndex);
+
+                    float size = 50f;
+                    float halfSize = size * 0.5f;
+                    float centerX = visiblePdfRect.centerX();
+                    float centerY = visiblePdfRect.centerY();
+                    RectF boundingBox = new RectF(centerX, centerY, centerX, centerY);
+                    boundingBox.inset(-halfSize, -halfSize);
+
+                    StampAnnotation pinnedIssueStamp = new StampAnnotation(pageIndex, boundingBox, "pinned_issue_opened");
+                    pinnedIssueStamp.setAppearanceStreamGenerator(new AssetAppearanceStreamGenerator("pinned_issue_opened.pdf"));
+
+                    document.getAnnotationProvider().addAnnotationToPage(pinnedIssueStamp);
+                }
+            }
+        }
     }
 }

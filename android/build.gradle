@@ -30,6 +30,11 @@ android {
     lintOptions {
         abortOnError false
     }
+    sourceSets {
+        main {
+            assets.srcDirs += 'src/main/res/stamps'
+        }
+    }
 }
 
 def demoVersion = false;

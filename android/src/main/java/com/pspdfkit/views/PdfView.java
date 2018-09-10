@@ -270,6 +270,10 @@ public class PdfView extends FrameLayout {
         });
     }
 
+    public PdfFragment getFragment() {
+        return fragment;
+    }
+
     public void removeFragment() {
         PdfFragment pdfFragment = (PdfFragment) fragmentManager.findFragmentByTag(fragmentTag);
         if (pdfFragment != null) {

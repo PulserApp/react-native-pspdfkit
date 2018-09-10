@@ -128,7 +128,9 @@ android {
             }
         }
     }
-    sourceSets { main { assets.srcDirs = ['src/main/assets', '../../../PDFs' , '../../../Images'] } }
+    sourceSets {
+        main { assets.srcDirs += ['src/main/assets', '../../../PDFs' , '../../../Images'] }
+    }
 }
 
 dependencies {

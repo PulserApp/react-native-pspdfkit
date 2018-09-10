@@ -25,6 +25,11 @@ import com.pspdfkit.configuration.activity.ThumbnailBarMode;
 import com.pspdfkit.configuration.page.PageFitMode;
 import com.pspdfkit.configuration.page.PageScrollDirection;
 import com.pspdfkit.configuration.page.PageScrollMode;
+import com.pspdfkit.ui.special_mode.controller.AnnotationTool;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ConfigurationAdapter {
     private static final String PAGE_SCROLL_DIRECTION = "pageScrollDirection";
@@ -134,6 +139,20 @@ public class ConfigurationAdapter {
                 configureDocumentInfoView(configuration.getBoolean(SHOW_DOCUMENT_INFO_VIEW));
             }
         }
+
+        configurePulserRequirements();
+    }
+
+    private void configurePulserRequirements() {
+        // Remove "Note", "Image" and "Stamp" buttons from annotation toolbar
+        List<AnnotationTool> enabledAnnotationTools = new ArrayList<>();
+        enabledAnnotationTools.addAll(Arrays.asList(AnnotationTool.values()));
+        enabledAnnotationTools.remove(AnnotationTool.NOTE);
+        enabledAnnotationTools.remove(AnnotationTool.IMAGE);
+        enabledAnnotationTools.remove(AnnotationTool.CAMERA);
+        enabledAnnotationTools.remove(AnnotationTool.STAMP);
+
+        configuration.enabledAnnotationTools(enabledAnnotationTools);
     }
 
     private void configureShowPageNumberOverlay(boolean showPageNumberOverlay) {

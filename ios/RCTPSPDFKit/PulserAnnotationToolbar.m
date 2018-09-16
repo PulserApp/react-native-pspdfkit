@@ -7,11 +7,12 @@
 
 - (instancetype)initWithAnnotationStateManager:(PSPDFAnnotationStateManager *)annotationStateManager {
   if ((self = [super initWithAnnotationStateManager:annotationStateManager])) {
-    // Remove "Note", "Image" and "Stamp" buttons from annotation toolbar
+    // Remove "Note", "Image", "Sound" and "Stamp" buttons from annotation toolbar
     NSMutableSet *editableTypes = [self.editableAnnotationTypes mutableCopy];
     [editableTypes removeObject:PSPDFAnnotationStringNote];
     [editableTypes removeObject:PSPDFAnnotationStringImage];
     [editableTypes removeObject:PSPDFAnnotationStringStamp];
+    [editableTypes removeObject:PSPDFAnnotationStringSound];
     [editableTypes removeObject:PSPDFAnnotationStringSavedAnnotations];
     self.editableAnnotationTypes = editableTypes;
     

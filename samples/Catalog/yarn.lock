@@ -4678,7 +4678,7 @@ react-native-fs@2.10.14:
     utf8 "^2.1.1"
 
 "react-native-pspdfkit@file:../..":
-  version "1.13.0"
+  version "1.20.0"
 
 react-native-safe-area-view@^0.7.0:
   version "0.7.0"
@@ -4694,7 +4694,7 @@ react-native-safe-area-view@^0.7.0:
 
 react-native-windows@0.53.0:
   version "0.53.0"
-  resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.53.0.tgz#445c146c89f4640ec6983aa567e039062ea96e9c"
+  resolved "http://registry.npmjs.org/react-native-windows/-/react-native-windows-0.53.0.tgz#445c146c89f4640ec6983aa567e039062ea96e9c"
   dependencies:
     chalk "^1.1.1"
     glob "^7.1.1"

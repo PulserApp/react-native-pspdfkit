@@ -252,6 +252,9 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         final PdfFragment fragment = parent.getFragment();
 
         if (fragment != null) {
+            // Exit currently active annotation tool
+            fragment.exitCurrentlyActiveMode();
+
             final PdfDocument document = fragment.getDocument();
 
             if (document != null) {

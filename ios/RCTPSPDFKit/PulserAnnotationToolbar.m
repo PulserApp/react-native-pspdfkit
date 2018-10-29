@@ -16,9 +16,8 @@
     [editableTypes removeObject:PSPDFAnnotationStringSavedAnnotations];
     self.editableAnnotationTypes = editableTypes;
     
-    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    UIImage *pinIssueImage = [[UIImage imageNamed:@"pin_pulser_issue" inBundle:bundle compatibleWithTraitCollection:nil] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    
+    UIImage *pinIssueImage = [[UIImage imageNamed:@"pin_pulser_issue"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
     _pinIssueButton = [PSPDFToolbarButton new];
     _pinIssueButton.accessibilityLabel = @"Pin Issue";
     [_pinIssueButton setImage:pinIssueImage];

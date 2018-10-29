@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		543155832187C435001DB126 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 543155822187C434001DB126 /* Assets */; };
+		543155AB2187CB35001DB126 /* pinned_issue_opened.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 543155A72187CB35001DB126 /* pinned_issue_opened.pdf */; };
+		543155AC2187CB35001DB126 /* pin_pulser_issue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 543155A82187CB35001DB126 /* pin_pulser_issue@3x.png */; };
+		543155AD2187CB35001DB126 /* pin_pulser_issue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 543155A92187CB35001DB126 /* pin_pulser_issue@2x.png */; };
+		543155AE2187CB35001DB126 /* pin_pulser_issue.png in Resources */ = {isa = PBXBuildFile; fileRef = 543155AA2187CB35001DB126 /* pin_pulser_issue.png */; };
 		543D5791211A135500E319F7 /* PulserAnnotationToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 543D5790211A135500E319F7 /* PulserAnnotationToolbar.m */; };
 		6540D1841D89D22E00B8F94F /* RCTPSPDFKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6540D1831D89D22E00B8F94F /* RCTPSPDFKitManager.m */; };
 		6572780C1D86AE7300A5E1A8 /* RCTConvert+PSPDFConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 657278071D86AE7300A5E1A8 /* RCTConvert+PSPDFConfiguration.m */; };
@@ -30,7 +33,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		543155822187C434001DB126 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Assets; path = RCTPSPDFKit/Assets; sourceTree = "<group>"; };
+		543155A72187CB35001DB126 /* pinned_issue_opened.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = pinned_issue_opened.pdf; sourceTree = "<group>"; };
+		543155A82187CB35001DB126 /* pin_pulser_issue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pin_pulser_issue@3x.png"; sourceTree = "<group>"; };
+		543155A92187CB35001DB126 /* pin_pulser_issue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pin_pulser_issue@2x.png"; sourceTree = "<group>"; };
+		543155AA2187CB35001DB126 /* pin_pulser_issue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pin_pulser_issue.png; sourceTree = "<group>"; };
 		543D578F211A133E00E319F7 /* PulserAnnotationToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PulserAnnotationToolbar.h; sourceTree = "<group>"; };
 		543D5790211A135500E319F7 /* PulserAnnotationToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PulserAnnotationToolbar.m; sourceTree = "<group>"; };
 		6540D1821D89D22E00B8F94F /* RCTPSPDFKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPSPDFKitManager.h; sourceTree = "<group>"; };
@@ -59,6 +65,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		543155A62187CB35001DB126 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				543155A72187CB35001DB126 /* pinned_issue_opened.pdf */,
+				543155A82187CB35001DB126 /* pin_pulser_issue@3x.png */,
+				543155A92187CB35001DB126 /* pin_pulser_issue@2x.png */,
+				543155AA2187CB35001DB126 /* pin_pulser_issue.png */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		657278041D86AE7300A5E1A8 /* RCTPSPDFKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,7 +108,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				543155822187C434001DB126 /* Assets */,
+				543155A62187CB35001DB126 /* Assets */,
 				657278041D86AE7300A5E1A8 /* RCTPSPDFKit */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
@@ -166,7 +183,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				543155832187C435001DB126 /* Assets in Resources */,
+				543155AE2187CB35001DB126 /* pin_pulser_issue.png in Resources */,
+				543155AD2187CB35001DB126 /* pin_pulser_issue@2x.png in Resources */,
+				543155AC2187CB35001DB126 /* pin_pulser_issue@3x.png in Resources */,
+				543155AB2187CB35001DB126 /* pinned_issue_opened.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -370,8 +370,7 @@
   CGFloat centerX = visiblePDFRect.origin.x + (visiblePDFRect.size.width - size.width) * 0.5;
   CGFloat centerY = visiblePDFRect.origin.y + (visiblePDFRect.size.height - size.height) * 0.5;
   
-  NSURL *stampsURL = [NSBundle.mainBundle.resourceURL URLByAppendingPathComponent:@"Stamps"];
-  NSURL *pinnedIssueStampURL = [stampsURL URLByAppendingPathComponent:@"pinned_issue_opened.pdf"];
+  NSURL *pinnedIssueStampURL = [NSBundle.mainBundle.resourceURL URLByAppendingPathComponent:@"pinned_issue_opened.pdf"];
   
   PSPDFStampAnnotation *pinnedIssueStamp = [[PSPDFStampAnnotation alloc] init];
   pinnedIssueStamp.appearanceStreamGenerator = [[PSPDFFileAppearanceStreamGenerator alloc] initWithFileURL:pinnedIssueStampURL];

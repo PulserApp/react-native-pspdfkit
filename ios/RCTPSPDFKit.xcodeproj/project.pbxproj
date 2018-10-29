@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		543155832187C435001DB126 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 543155822187C434001DB126 /* Assets */; };
 		543D5791211A135500E319F7 /* PulserAnnotationToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 543D5790211A135500E319F7 /* PulserAnnotationToolbar.m */; };
-		543D57AE211B586600E319F7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 543D57AC211B522800E319F7 /* Assets.xcassets */; };
-		54E3CAEE2139FCC800AE8381 /* Stamps in Resources */ = {isa = PBXBuildFile; fileRef = 54E3CAED2139FCC700AE8381 /* Stamps */; };
 		6540D1841D89D22E00B8F94F /* RCTPSPDFKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6540D1831D89D22E00B8F94F /* RCTPSPDFKitManager.m */; };
 		6572780C1D86AE7300A5E1A8 /* RCTConvert+PSPDFConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 657278071D86AE7300A5E1A8 /* RCTConvert+PSPDFConfiguration.m */; };
 		657278111D86AEC600A5E1A8 /* RCTConvert+PSPDFDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 657278101D86AEC600A5E1A8 /* RCTConvert+PSPDFDocument.m */; };
@@ -31,10 +30,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		543155822187C434001DB126 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Assets; path = RCTPSPDFKit/Assets; sourceTree = "<group>"; };
 		543D578F211A133E00E319F7 /* PulserAnnotationToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PulserAnnotationToolbar.h; sourceTree = "<group>"; };
 		543D5790211A135500E319F7 /* PulserAnnotationToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PulserAnnotationToolbar.m; sourceTree = "<group>"; };
-		543D57AC211B522800E319F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		54E3CAED2139FCC700AE8381 /* Stamps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Stamps; sourceTree = "<group>"; };
 		6540D1821D89D22E00B8F94F /* RCTPSPDFKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPSPDFKitManager.h; sourceTree = "<group>"; };
 		6540D1831D89D22E00B8F94F /* RCTPSPDFKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPSPDFKitManager.m; sourceTree = "<group>"; };
 		657277151D8312EA00A5E1A8 /* libRCTPSPDFKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTPSPDFKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,8 +91,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				54E3CAED2139FCC700AE8381 /* Stamps */,
-				543D57AC211B522800E319F7 /* Assets.xcassets */,
+				543155822187C434001DB126 /* Assets */,
 				657278041D86AE7300A5E1A8 /* RCTPSPDFKit */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
@@ -169,8 +166,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				543D57AE211B586600E319F7 /* Assets.xcassets in Resources */,
-				54E3CAEE2139FCC800AE8381 /* Stamps in Resources */,
+				543155832187C435001DB126 /* Assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -41,6 +41,8 @@
       PSPDFToolbarButton *pinIssueButton = annotationToolbar.pinIssueButton;
       [pinIssueButton addTarget:self action:@selector(pinIssueButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     }
+
+    [self setupDefaultStyles];
   }
 
   return self;
@@ -356,6 +358,15 @@
   }
 }
 
+#pragma mark - Pulser styling
+
+- (void)setupDefaultStyles {
+  NSString *fontSizeProperty = NSStringFromSelector(@selector(fontSize));
+  CGFloat fontSize = 40;
+
+  [[PSPDFKit sharedInstance].styleManager setLastUsedValue:@(fontSize) forProperty:fontSizeProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringFreeText, nil)];
+}
+
 #pragma mark - Pulser events
 
 - (void)pinIssueButtonPressed:(id)sender {
@@ -366,7 +377,8 @@
   CGRect visibleViewRect = pageView.visibleRect;
   CGRect visiblePDFRect = [pageView convertViewRectToPDFRect:visibleViewRect];
 
-  CGSize size = CGSizeMake(50.f, 50.f);
+  CGFloat scale = pageView.PDFScale > 0 ? pageView.PDFScale : 0.01;
+  CGSize size = CGSizeMake(30 / scale, 30 / scale);
   CGFloat centerX = visiblePDFRect.origin.x + (visiblePDFRect.size.width - size.width) * 0.5;
   CGFloat centerY = visiblePDFRect.origin.y + (visiblePDFRect.size.height - size.height) * 0.5;
   

@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.pspdfkit.annotations.AnnotationType;
 import com.pspdfkit.annotations.StampAnnotation;
 import com.pspdfkit.annotations.appearance.AssetAppearanceStreamGenerator;
+import com.pspdfkit.annotations.defaults.FreeTextAnnotationDefaultsProvider;
 import com.pspdfkit.annotations.stamps.StampPickerItem;
 import com.pspdfkit.document.PdfDocument;
 import com.pspdfkit.react.R;
@@ -91,6 +93,7 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         parent.manuallyLayoutChildren();
         parent.updateState();
 
+        configurePulserDefaults();
         configurePulserToolbar();
     }
 
@@ -216,6 +219,20 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         return formEditingActive;
     }
 
+    private void configurePulserDefaults() {
+        final Context context = parent.getContext();
+        final PdfFragment fragment = parent.getFragment();
+
+        if (fragment != null) {
+            fragment.setAnnotationDefaultsProvider(AnnotationType.FREETEXT, new FreeTextAnnotationDefaultsProvider(context) {
+                @Override
+                public float getDefaultTextSize() {
+                    return 40;
+                }
+            });
+        }
+    }
+
     private void configurePulserToolbar() {
         final Context context = parent.getContext();
         final ContextualToolbarMenuItem pinIssueMenuItem = ContextualToolbarMenuItem.createSingleItem(
@@ -264,10 +281,11 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
                     RectF visiblePdfRect = new RectF();
                     fragment.getVisiblePdfRect(visiblePdfRect, pageIndex);
 
-                    float size = 50f;
+                    float size = 90f;
                     float halfSize = size * 0.5f;
                     float centerX = visiblePdfRect.centerX();
                     float centerY = visiblePdfRect.centerY();
+
                     RectF boundingBox = new RectF(centerX, centerY, centerX, centerY);
                     boundingBox.inset(-halfSize, -halfSize);
 

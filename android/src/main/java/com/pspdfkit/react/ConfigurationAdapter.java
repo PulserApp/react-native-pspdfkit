@@ -144,13 +144,14 @@ public class ConfigurationAdapter {
     }
 
     private void configurePulserRequirements() {
-        // Remove "Note", "Image" and "Stamp" buttons from annotation toolbar
+        // Remove "Note", "Image", "Sugnature" and "Stamp" buttons from annotation toolbar
         List<AnnotationTool> enabledAnnotationTools = new ArrayList<>();
         enabledAnnotationTools.addAll(Arrays.asList(AnnotationTool.values()));
         enabledAnnotationTools.remove(AnnotationTool.NOTE);
         enabledAnnotationTools.remove(AnnotationTool.IMAGE);
         enabledAnnotationTools.remove(AnnotationTool.CAMERA);
         enabledAnnotationTools.remove(AnnotationTool.STAMP);
+        enabledAnnotationTools.remove(AnnotationTool.SIGNATURE);
 
         configuration.enabledAnnotationTools(enabledAnnotationTools);
     }

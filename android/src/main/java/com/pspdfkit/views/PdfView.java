@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.Choreographer;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.pspdfkit.annotations.AnnotationType;
 import com.pspdfkit.configuration.activity.PdfActivityConfiguration;
 import com.pspdfkit.configuration.activity.ThumbnailBarMode;
 import com.pspdfkit.document.PdfDocument;
+import com.pspdfkit.document.PdfDocumentLoader;
 import com.pspdfkit.document.formatters.DocumentJsonFormatter;
 import com.pspdfkit.document.providers.DataProvider;
 import com.pspdfkit.forms.ChoiceFormElement;
@@ -25,6 +27,7 @@ import com.pspdfkit.forms.ComboBoxFormElement;
 import com.pspdfkit.forms.EditableButtonFormElement;
 import com.pspdfkit.forms.FormElement;
 import com.pspdfkit.forms.TextFormElement;
+import com.pspdfkit.listeners.OnPreparePopupToolbarListener;
 import com.pspdfkit.listeners.SimpleDocumentListener;
 import com.pspdfkit.react.R;
 import com.pspdfkit.react.events.PdfViewDataReturnedEvent;
@@ -38,6 +41,7 @@ import com.pspdfkit.ui.forms.FormEditingBar;
 import com.pspdfkit.ui.inspector.PropertyInspectorCoordinatorLayout;
 import com.pspdfkit.ui.thumbnail.PdfThumbnailBarController;
 import com.pspdfkit.ui.toolbar.ToolbarCoordinatorLayout;
+import com.pspdfkit.ui.toolbar.popup.PdfTextSelectionPopupToolbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +53,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -89,6 +94,8 @@ public class PdfView extends FrameLayout {
     @Nullable
     private PdfFragment fragment;
     private BehaviorSubject<PdfFragment> fragmentGetter = BehaviorSubject.create();
+    @Nullable
+    private PdfTextSelectionPopupToolbar textSelectionPopupToolbar;
 
     public PdfView(@NonNull Context context) {
         super(context);
@@ -170,7 +177,7 @@ public class PdfView extends FrameLayout {
             documentOpeningDisposable.dispose();
         }
         updateState();
-        documentOpeningDisposable = PdfDocument.openDocumentAsync(getContext(), Uri.parse(document))
+        documentOpeningDisposable = PdfDocumentLoader.openDocumentAsync(getContext(), Uri.parse(document))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<PdfDocument>() {
@@ -237,7 +244,7 @@ public class PdfView extends FrameLayout {
             public void onDocumentLoaded(@NonNull PdfDocument document) {
                 manuallyLayoutChildren();
                 pdfFragment.setPageIndex(pageIndex, false);
-                pdfThumbnailBar.setDocument(document, configuration.getConfiguration(), pdfFragment.getEventBus());
+                pdfThumbnailBar.setDocument(document, configuration.getConfiguration());
                 updateState();
             }
 
@@ -254,6 +261,12 @@ public class PdfView extends FrameLayout {
         pdfFragment.addDocumentListener(pdfViewDocumentListener);
         pdfFragment.addOnAnnotationSelectedListener(pdfViewDocumentListener);
         pdfFragment.addOnAnnotationUpdatedListener(pdfViewDocumentListener);
+        pdfFragment.setOnPreparePopupToolbarListener(new OnPreparePopupToolbarListener() {
+            @Override
+            public void onPrepareTextSelectionPopupToolbar(@NonNull PdfTextSelectionPopupToolbar pdfTextSelectionPopupToolbar) {
+                textSelectionPopupToolbar = pdfTextSelectionPopupToolbar;
+            }
+        });
 
         setupThumbnailBar(pdfFragment);
 
@@ -298,6 +311,10 @@ public class PdfView extends FrameLayout {
         fragmentGetter = BehaviorSubject.create();
         pendingFragmentActions.dispose();
         pendingFragmentActions = new CompositeDisposable();
+        if (textSelectionPopupToolbar != null) {
+            textSelectionPopupToolbar.dismiss();
+            textSelectionPopupToolbar = null;
+        }
     }
 
     void manuallyLayoutChildren() {
@@ -443,9 +460,33 @@ public class PdfView extends FrameLayout {
         return EnumSet.noneOf(AnnotationType.class);
     }
 
-    public void addAnnotation(ReadableMap annotation) {
-        JSONObject json = new JSONObject(annotation.toHashMap());
-        fragment.getDocument().getAnnotationProvider().createAnnotationFromInstantJson(json.toString());
+    public Disposable addAnnotation(ReadableMap annotation) {
+        return fragmentGetter.take(1).map(PdfFragment::getDocument).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pdfDocument -> {
+                    JSONObject json = new JSONObject(annotation.toHashMap());
+                    pdfDocument.getAnnotationProvider().createAnnotationFromInstantJson(json.toString());
+                });
+
+    }
+
+    public Disposable removeAnnotation(ReadableMap annotation) {
+        return fragmentGetter.take(1).map(PdfFragment::getDocument).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(pdfDocument -> {
+                    JSONObject json = new JSONObject(annotation.toHashMap());
+                    // We can't create an annotation from the instant json since that will attach it to the document,
+                    // so we manually grab the necessary values.
+                    int pageIndex = json.optInt("pageIndex", -1);
+                    String type = json.optString("type", null);
+                    String name = json.optString("name", null);
+                    if (pageIndex == -1 || type == null || name == null) {
+                        return Observable.empty();
+                    }
+                    return pdfDocument.getAnnotationProvider().getAllAnnotationsOfType(getTypeFromString(type), pageIndex, 1)
+                            .filter(annotationToFilter -> name.equals(annotationToFilter.getName()))
+                            .map(filteredAnnotation -> new Pair<>(filteredAnnotation, pdfDocument));
+                }).subscribe(pair -> pair.second.getAnnotationProvider().removeAnnotationFromPage(pair.first));
     }
 
     public Single<JSONObject> getAllUnsavedAnnotations() {
@@ -462,10 +503,14 @@ public class PdfView extends FrameLayout {
                 });
     }
 
-    public void addAnnotations(ReadableMap annotation) {
-        JSONObject json = new JSONObject(annotation.toHashMap());
-        final DataProvider dataProvider = new DocumentJsonDataProvider(json);
-        DocumentJsonFormatter.importDocumentJson(fragment.getDocument(), dataProvider);
+    public Disposable addAnnotations(ReadableMap annotation) {
+        return fragmentGetter.take(1).map(PdfFragment::getDocument).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pdfDocument -> {
+                    JSONObject json = new JSONObject(annotation.toHashMap());
+                    final DataProvider dataProvider = new DocumentJsonDataProvider(json);
+                    DocumentJsonFormatter.importDocumentJson(pdfDocument, dataProvider);
+                });
     }
 
     public Disposable getFormFieldValue(final int requestId, @NonNull String formElementName) {

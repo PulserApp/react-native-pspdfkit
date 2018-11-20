@@ -49,7 +49,6 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
     private final ToolbarCoordinatorLayout toolbarCoordinatorLayout;
     private final AnnotationCreationToolbar annotationCreationToolbar;
     private final AnnotationEditingToolbar annotationEditingToolbar;
-    private final TextSelectionToolbar textSelectionToolbar;
     private final FormEditingBar formEditingBar;
 
     private boolean annotationCreationActive = false;
@@ -69,7 +68,6 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         this.toolbarCoordinatorLayout = toolbarCoordinatorLayout;
         this.annotationCreationToolbar = new AnnotationCreationToolbar(parent.getContext());
         this.annotationEditingToolbar = new AnnotationEditingToolbar(parent.getContext());
-        this.textSelectionToolbar = new TextSelectionToolbar(parent.getContext());
         this.formEditingBar = formEditingBar;
 
         this.annotationCreationInspectorController = new DefaultAnnotationCreationInspectorController(parent.getContext(), inspectorCoordinatorLayout);
@@ -149,21 +147,11 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
     @Override
     public void onEnterTextSelectionMode(@NonNull TextSelectionController controller) {
         textSelectionActive = true;
-
-        textSelectionToolbar.bindController(controller);
-        toolbarCoordinatorLayout.displayContextualToolbar(textSelectionToolbar, true);
-        parent.manuallyLayoutChildren();
-        parent.updateState();
     }
 
     @Override
     public void onExitTextSelectionMode(@NonNull TextSelectionController controller) {
         textSelectionActive = false;
-
-        toolbarCoordinatorLayout.removeContextualToolbar(true);
-        textSelectionToolbar.unbindController();
-        parent.manuallyLayoutChildren();
-        parent.updateState();
     }
 
     @Override
@@ -198,7 +186,6 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         annotationCreationInspectorController.unbindAnnotationCreationController();
         annotationEditingToolbar.unbindController();
         annotationEditingInspectorController.unbindAnnotationEditingController();
-        textSelectionToolbar.unbindController();
         formEditingInspectorController.unbindFormEditingController();
         formEditingBar.unbindController();
     }

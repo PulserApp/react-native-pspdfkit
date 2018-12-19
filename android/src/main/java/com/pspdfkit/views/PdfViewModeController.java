@@ -34,8 +34,10 @@ import com.pspdfkit.ui.toolbar.ContextualToolbarMenuItem;
 import com.pspdfkit.ui.toolbar.TextSelectionToolbar;
 import com.pspdfkit.ui.toolbar.ToolbarCoordinatorLayout;
 import com.pspdfkit.views.toolbar.PulserToolbarGroupingRule;
+import com.pspdfkit.ui.toolbar.grouping.MenuItemGroupingRule;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Keeps track of the currently active mode and handles updating the toolbar states.
@@ -73,6 +75,13 @@ class PdfViewModeController implements AnnotationManager.OnAnnotationCreationMod
         this.annotationCreationInspectorController = new DefaultAnnotationCreationInspectorController(parent.getContext(), inspectorCoordinatorLayout);
         this.annotationEditingInspectorController = new DefaultAnnotationEditingInspectorController(parent.getContext(), inspectorCoordinatorLayout);
         this.formEditingInspectorController = new FormEditingInspectorController(parent.getContext(), inspectorCoordinatorLayout);
+    }
+
+    /**
+     * Sets the menu item grouping rule that will be used for the annotation creation toolbar.
+     */
+    public void setMenuItemGroupingRule(@Nullable MenuItemGroupingRule groupingRule) {
+        this.annotationCreationToolbar.setMenuItemGroupingRule(groupingRule);
     }
 
     @Override

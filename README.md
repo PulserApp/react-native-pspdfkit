@@ -1,4 +1,6 @@
-## React Native wrapper for PSPDFKit for iOS, Android and Windows UWP.
+## React Native wrapper for PSPDFKit for iOS, Android & Windows. (PDF SDK for React Native)
+
+![PDF SDK for React Native](https://github.com/PSPDFKit/react-native/blob/master/article-header.png?raw=true)
 
 This wrapper requires a valid license of PSPDFKit. Licenses are per platform. You can request [a trial license here](https://pspdfkit.com/try/).
 
@@ -22,8 +24,8 @@ The [PSPDFKit SDK](https://pspdfkit.com/) is a framework that allows you to view
 
 #### Requirements
 
-- Xcode 10
-- PSPDFKit 8.0 for iOS or later
+- Xcode 10.1
+- PSPDFKit 8.1 for iOS or later
 - react-native >= 0.55.4
 
 #### Getting Started
@@ -230,6 +232,7 @@ Example - Native UI Component:
 - Copy `PSPDFKit.framework` and `PSPDFKitUI.framework` into the `PSPDFKit` directory.
 - Install dependencies: `yarn install` in `samples/Catalog` directory. (Because of a [bug](https://github.com/yarnpkg/yarn/issues/2165) you may need to clean `yarn`'s cache with `yarn cache clean` before.)
 - Run the app with `react-native-cli`: `react-native run-ios`
+- If you get an error about `config.h` not being found check out [this blog post](https://tuntunir.blogspot.com/2018/02/react-native-fatal-error-configh-file.html) for information on how to fix it.
 
 #### Configuration Mapping
 
@@ -241,6 +244,18 @@ Annotations are mapped based on their type name. This is case sensitive. For exa
 editableAnnotationTypes: ["Ink", "Highlight"];
 ```
 
+#### Menu Item Mapping
+
+The PSPDFKit React Native iOS Wrapper allows you to specify a custom grouping for the annotation creation toolbar. Please refer to [`RCTConvert+PSPDFAnnotationToolbarConfiguration.m`](./ios/RCTPSPDFKit/Converters/RCTConvert+PSPDFAnnotationToolbarConfiguration.m#L47) for the complete list of menu items. To set them just specify the `menuItemGrouping` prop on the `PSPDFKitView`. The format used is as follows:
+
+```
+[
+  menuItem,
+  { key: menuItem, items: [subItem, subItem]},
+  ...
+]
+```
+
 ### Android
 
 #### Requirements
@@ -248,6 +263,7 @@ editableAnnotationTypes: ["Ink", "Highlight"];
 - Android SDK
 - Android Build Tools 23.0.1 (React Native)
 - Android Build Tools 28.0.3 (PSPDFKit module)
+- Android Gradle plugin >= 3.2.1
 - PSPDFKit >= 5.0.1
 - react-native >= 0.55.4
 
@@ -318,7 +334,30 @@ Let's create a simple app that integrates PSPDFKit and uses the react-native-psp
    ...
    ```
 
-9. <a id="step-8"></a>Enter your PSPDFKit license key into `YourApp/android/app/src/main/AndroidManifest.xml` file:
+9. As of version `0.55.4` react-native doesn't support the Android gradle plugin version `3.2.1` so in order to make bundling work we need to add a gradle task that will move the bundle assets to the correct location. In `YourApp/android/app/build.gradle` add:
+
+```
+task copyDebugJsAndAssets(type: Copy) {
+    from "$buildDir/intermediates/assets/debug"
+    into "$buildDir/intermediates/merged_assets/debug/mergeDebugAssets/out"
+}
+
+task copyReleaseJsAndAssets(type: Copy) {
+    from "$buildDir/intermediates/assets/release"
+    into "$buildDir/intermediates/merged_assets/release/mergeReleaseAssets/out"
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.equalsIgnoreCase('bundleDebugJsAndAssets')) {
+        task.finalizedBy(copyDebugJsAndAssets)
+    }
+    if (task.name.equalsIgnoreCase('bundleReleaseJsAndAssets')) {
+        task.finalizedBy(copyReleaseJsAndAssets)
+    }
+}
+```
+
+10. <a id="step-8"></a>Enter your PSPDFKit license key into `YourApp/android/app/src/main/AndroidManifest.xml` file:
 
 ```diff
    <application>
@@ -331,7 +370,7 @@ Let's create a simple app that integrates PSPDFKit and uses the react-native-psp
    </application>
 ```
 
-10. Set primary color. In `YourApp/android/app/src/main/res/values/styles.xml` replace
+11. Set primary color. In `YourApp/android/app/src/main/res/values/styles.xml` replace
 
 ```xml
 <!-- Customize your theme here. -->
@@ -343,7 +382,7 @@ with
 <item name="colorPrimary">#3C97C9</item>
 ```
 
-11. <a id="step-10"></a>Replace the default component from `YourApp/App.js` with a simple touch area to present a PDF document from the local device filesystem:
+12. <a id="step-10"></a>Replace the default component from `YourApp/App.js` with a simple touch area to present a PDF document from the local device filesystem:
 
 ```javascript
 import React, { Component } from "react";
@@ -415,13 +454,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-12. Before launching the app you need to copy a PDF document onto your development device or emulator.
+13. Before launching the app you need to copy a PDF document onto your development device or emulator.
 
     ```bash
     adb push /path/to/your/document.pdf /sdcard/document.pdf
     ```
 
-13. Your app is now ready to launch. From `YourApp` directory run `react-native run-android`.
+14. Your app is now ready to launch. From `YourApp` directory run `react-native run-android`.
 
     ```bash
     react-native run-android
@@ -495,6 +534,18 @@ Just like on iOS we also support integrating PSPDFKit directly into the react-na
 - Your activity hosting the react component needs to extend from `ReactFragmentActivity`.
 - Because of [issues](https://github.com/facebook/react-native/issues/17968) in react-native our `PdfView` needs to call `layout` and `dispatchOnGlobalLayout` on every frame, this might negatively affect your apps performance or even cause it to misbehave.
 - `PSPDFKitView` doesn't yet support all the features (outline, bookmarks, thubmnail grid, view settings) using `PSPDFKit.present` provides.
+
+##### Menu Item Mapping
+
+The PSPDFKit React Native Android Wrapper allows you to specify a custom grouping for the annotation creation toolbar. Please refer to [`ReactGroupingRule.java`](https://github.com/PSPDFKit/react-native/blob/master/android/src/main/java/com/pspdfkit/react/menu/ReactGroupingRule.java) for the complete list of menu items. To set them just specify the `menuItemGrouping` prop on the `PSPDFKitView`. The format used is as follows:
+
+```
+[
+  menuItem,
+  { key: menuItem, items: [subItem, subItem]},
+  ...
+]
+```
 
 #### Update
 
@@ -621,12 +672,12 @@ Let's create a simple app that integrates PSPDFKit and uses the react-native-psp
 17. Add an application resource to your `Appl.xaml` to reference your License key.
 
 ```diff
-<Application
-	x:Class="Catalog.App"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:local="using:Catalog"
-	RequestedTheme="Light">
+<rn:ReactApplication
+    x:Class="Catalog.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:rn="using:ReactNative"
+    RequestedTheme="Light">
 
 +	<Application.Resources>
 +		<ResourceDictionary>
@@ -636,7 +687,7 @@ Let's create a simple app that integrates PSPDFKit and uses the react-native-psp
 +		</ResourceDictionary>
 +	</Application.Resources>
 
-</Application>
+</rn:ReactApplication>
 ```
 
 18. Create a new file resouce called `License.xaml` with your PSPDFKit license key at the top level of the
@@ -740,26 +791,11 @@ var styles = StyleSheet.create({
 1. Clone the repository. `git clone https://github.com/PSPDFKit/react-native.git`.
 2. From the command promt `cd react-native\samples\Catalog`.
 3. Make sure `react-native-cli` is installed: `yarn global add react-native-cli`.
-4. Edit `package.json` to change the version of `react-native` to `0.53.0` and refernce the react-native
-   pspdfkit repo online.
-
-```diff
-"dependencies": {
-"react": "16.3.1",
--"react-native": "0.55.4",
-+"react-native": "0.53.0",
-"react-native-fs": "2.10.14",
-"react-native-pspdfkit": "file:../../",
-"react-native-windows": "0.53.0",
-"react-navigation": "^1.0.3"
-}
-```
-
-5. run `yarn install`. (Because of a [bug](https://github.com/yarnpkg/yarn/issues/2165) you may need to clean `yarn`'s cache with `yarn cache clean` before.)
-6. Open the UWP catalog solution in `react-native\samples\Catalog\windows`.
-7. Accept and install any required extensions when prompted.
-8. If the settings windows opens, click on `Developer` and selected `yes`.
-9. Create a new file resouce called `License.xaml` with your PSPDFKit license key at the top level of the project. (Replace `ENTER LICENSE KEY HERE` with your key)
+4. run `yarn install`. (Because of a [bug](https://github.com/yarnpkg/yarn/issues/2165) you may need to clean `yarn`'s cache with `yarn cache clean` before.)
+5. Open the UWP catalog solution in `react-native\samples\Catalog\windows`.
+6. Accept and install any required extensions when prompted.
+7. If the settings windows opens, click on `Developer` and selected `yes`.
+8. Create a new file resouce called `License.xaml` with your PSPDFKit license key at the top level of the project. (Replace `ENTER LICENSE KEY HERE` with your key)
 
 ```xaml
 	<ResourceDictionary
@@ -771,8 +807,8 @@ var styles = StyleSheet.create({
 	</ResourceDictionary>
 ```
 
-10. From the command prompt run `react-native run-windows`.
-11. Enter `y` to accept the certificate when prompted and allow socket access for reactive when prompted.
+9. From the command prompt run `react-native run-windows`.
+10. Enter `y` to accept the certificate when prompted and allow socket access for reactive when prompted.
 
 #### API
 

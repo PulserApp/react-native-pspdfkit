@@ -1,5 +1,5 @@
 //
-//  Copyright © 2018 PSPDFKit GmbH. All rights reserved.
+//  Copyright © 2018-2019 PSPDFKit GmbH. All rights reserved.
 //
 //  THIS SOURCE CODE AND ANY ACCOMPANYING DOCUMENTATION ARE PROTECTED BY INTERNATIONAL COPYRIGHT LAW
 //  AND MAY NOT BE RESOLD OR REDISTRIBUTED. USAGE IS BOUND TO THE PSPDFKIT LICENSE AGREEMENT.
@@ -14,15 +14,17 @@
 + (NSArray <NSDictionary *> *)instantJSONFromAnnotations:(NSArray <PSPDFAnnotation *> *) annotations {
   NSMutableArray <NSDictionary *> *annotationsJSON = [NSMutableArray new];
   for (PSPDFAnnotation *annotation in annotations) {
+    NSDictionary <NSString *, NSString *> *uuidDict = @{@"uuid" : annotation.uuid};
     NSData *annotationData = [annotation generateInstantJSONWithError:NULL];
     if (annotationData) {
-      NSDictionary *annotationDictionary = [NSJSONSerialization JSONObjectWithData:annotationData options:kNilOptions error:NULL];
+      NSMutableDictionary *annotationDictionary = [[NSJSONSerialization JSONObjectWithData:annotationData options:kNilOptions error:NULL] mutableCopy];
+      [annotationDictionary addEntriesFromDictionary:uuidDict];
       if (annotationDictionary) {
         [annotationsJSON addObject:annotationDictionary];
       }
-    } else if (annotation.name) {
-      // We only generate Instant JSON data for attached annotations. When an annotation is deleted, we only send the annotation name.
-      [annotationsJSON addObject:@{@"name" : annotation.name}];
+    } else {
+      // We only generate Instant JSON data for attached annotations. When an annotation is deleted, we only set the annotation uuid.
+      [annotationsJSON addObject:uuidDict];
     }
   }
 

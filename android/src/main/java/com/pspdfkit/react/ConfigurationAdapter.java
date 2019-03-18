@@ -3,7 +3,7 @@
  *
  *   PSPDFKit
  *
- *   Copyright © 2017-2018 PSPDFKit GmbH. All rights reserved.
+ *   Copyright © 2017-2019 PSPDFKit GmbH. All rights reserved.
  *
  *   THIS SOURCE CODE AND ANY ACCOMPANYING DOCUMENTATION ARE PROTECTED BY INTERNATIONAL COPYRIGHT LAW
  *   AND MAY NOT BE RESOLD OR REDISTRIBUTED. USAGE IS BOUND TO THE PSPDFKIT LICENSE AGREEMENT.
@@ -62,6 +62,7 @@ public class ConfigurationAdapter {
     private static final String SHOW_SHARE_ACTION = "showShareAction";
     private static final String SHOW_PRINT_ACTION = "showPrintAction";
     private static final String SHOW_DOCUMENT_INFO_VIEW = "showDocumentInfoView";
+    private static final String SHOW_DOCUMENT_TITLE_OVERLAY = "documentLabelEnabled";
 
 
     private final PdfActivityConfiguration.Builder configuration;
@@ -137,6 +138,9 @@ public class ConfigurationAdapter {
             }
             if (configuration.hasKey(SHOW_DOCUMENT_INFO_VIEW)) {
                 configureDocumentInfoView(configuration.getBoolean(SHOW_DOCUMENT_INFO_VIEW));
+            }
+            if (configuration.hasKey(SHOW_DOCUMENT_TITLE_OVERLAY)) {
+                configureShowDocumentTitleOverlay(configuration.getBoolean(SHOW_DOCUMENT_TITLE_OVERLAY));
             }
         }
 
@@ -302,6 +306,14 @@ public class ConfigurationAdapter {
             configuration.enableDocumentInfoView();
         } else {
             configuration.disableDocumentInfoView();
+        }
+    }
+
+    private void configureShowDocumentTitleOverlay(boolean showDocumentTitleOverlay) {
+        if (showDocumentTitleOverlay) {
+            configuration.showDocumentTitleOverlay();
+        } else {
+            configuration.hideDocumentTitleOverlay();
         }
     }
 

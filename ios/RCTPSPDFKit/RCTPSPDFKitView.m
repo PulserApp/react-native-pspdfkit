@@ -1,5 +1,5 @@
 //
-//  Copyright © 2018 PSPDFKit GmbH. All rights reserved.
+//  Copyright © 2018-2019 PSPDFKit GmbH. All rights reserved.
 //
 //  THIS SOURCE CODE AND ANY ACCOMPANYING DOCUMENTATION ARE PROTECTED BY INTERNATIONAL COPYRIGHT LAW
 //  AND MAY NOT BE RESOLD OR REDISTRIBUTED. USAGE IS BOUND TO THE PSPDFKIT LICENSE AGREEMENT.
@@ -227,31 +227,19 @@
   return success;
 }
 
-- (BOOL)removeAnnotation:(id)jsonAnnotation {
-  NSData *data;
-  if ([jsonAnnotation isKindOfClass:NSString.class]) {
-    data = [jsonAnnotation dataUsingEncoding:NSUTF8StringEncoding];
-  } else if ([jsonAnnotation isKindOfClass:NSDictionary.class])  {
-    data = [NSJSONSerialization dataWithJSONObject:jsonAnnotation options:0 error:nil];
-  } else {
-    NSLog(@"Invalid JSON Annotation.");
-    return NO;
-  }
-
+- (BOOL)removeAnnotationWithUUID:(NSString *)annotationUUID {
   PSPDFDocument *document = self.pdfController.document;
-  PSPDFDocumentProvider *documentProvider = document.documentProviders.firstObject;
 
   BOOL success = NO;
-  if (data) {
-    PSPDFAnnotation *annotationToRemove = [PSPDFAnnotation annotationFromInstantJSON:data documentProvider:documentProvider error:NULL];
-    for (PSPDFAnnotation *annotation in [document annotationsForPageAtIndex:annotationToRemove.pageIndex type:annotationToRemove.type]) {
+
+  NSArray<PSPDFAnnotation *> *allAnnotations = [[document allAnnotationsOfType:PSPDFAnnotationTypeAll].allValues valueForKeyPath:@"@unionOfArrays.self"];
+    for (PSPDFAnnotation *annotation in allAnnotations) {
       // Remove the annotation if the name matches.
-      if ([annotation.name isEqualToString:annotationToRemove.name]) {
+      if ([annotation.uuid isEqualToString:annotationUUID]) {
         success = [document removeAnnotations:@[annotation] options:nil];
         break;
       }
     }
-  }
 
   if (!success) {
     NSLog(@"Failed to remove annotation.");

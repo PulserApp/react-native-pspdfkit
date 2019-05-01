@@ -398,6 +398,11 @@
   PSPDFPageIndex pageIndex = self.pdfController.pageIndex;
   PSPDFPageView *pageView = [self.pdfController pageViewForPageAtIndex:pageIndex];
 
+  PulserAnnotationToolbar *annotationToolbar = (PulserAnnotationToolbar *) _pdfController.annotationToolbarController.annotationToolbar;
+  if (annotationToolbar) {
+    [annotationToolbar done:(nil)];
+  }
+
   CGRect visibleViewRect = pageView.visibleRect;
   CGRect visiblePDFRect = [pageView convertViewRectToPDFRect:visibleViewRect];
 
